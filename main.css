@@ -1,0 +1,46 @@
+.header {
+    display: block;
+    min-width: 480px;
+    max-width: 480px;
+    margin: auto;
+}
+
+.resultHeader {
+    display: block;
+    min-width: 480px;
+    max-width: 480px;
+    margin: auto;
+    padding: 15px 0 0 30px;
+    font-size: 16pt;
+}
+
+.resultSet {
+    display: block;
+    min-width: 480px;
+    max-width: 480px;
+    margin: auto;
+    padding: 5px 0 10px 30px;
+    font-size: 14pt;
+}
+
+.dateButton {
+    display: inline-block;
+    color: #444;
+    border: 1px solid #bbb;
+    background: #ddd;
+    box-shadow: 0 0 5px -1px rgba(0,0,0,0.2);
+    cursor: pointer;
+    vertical-align: middle;
+    max-width: 100px;
+    padding: 5px;
+    text-align: center;
+}
+
+#selectedDate {
+    display: inline-block;
+    min-width: 380px;
+    vertical-align: middle;
+    padding: 5px;
+    text-align: center;
+    font-size: 18pt;
+}

@@ -1,2 +1,2 @@
-# datemath
-A little website for Jaime
+# DateMath
+A little website for Jaime.
