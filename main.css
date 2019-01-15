@@ -44,3 +44,12 @@
     text-align: center;
     font-size: 18pt;
 }
+
+footer {
+    display: block;
+    min-width: 100px;
+    max-width: 480px;
+    margin: auto;
+    padding-top: 20px;
+    font-size: 8pt;
+}
