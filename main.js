@@ -27,27 +27,21 @@ let incX = x => {
 }
 
 let mooIncX = x => {
-    let newDate = new Date(date);
+    let newDate = new Date(date), valid = false;
+    newDate.setDate(newDate.getDate() + x);
+    
+    while (!valid) {
+        valid = true;
 
-    Array(x).fill().map((_, i) => {
-        let valid = false;
-        while (!valid) {
-            valid = true;
+        let weekend = newDate.getDay() == 0 || newDate.getDay() == 6;
+        let holiday = holidays.indexOf(newDate.toLocaleDateString(locale)) != -1;
+        
+        if (weekend) valid = false;
+        if (holiday) valid = false;
 
-            newDate.setDate(newDate.getDate() + 1);
+        if (!valid) newDate.setDate(newDate.getDate() + 1);
+    };
 
-            if (newDate.getDay() == 0 || newDate.getDay() == 6) {
-                valid = false; // weekend
-                //console.log(`${newDate} is a weekend, going again`);
-            }
-            if (holidays.indexOf(newDate.toLocaleDateString(locale)) != -1) {
-                valid = false; // matches holiday
-                //console.log(`${newDate} is a holiday, going again`);
-            }
-        }
-    });
-
-    console.log(`${date} + ${x} = ${newDate}`);
     return newDate;
 }
 
