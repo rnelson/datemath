@@ -1,20 +1,36 @@
 let date = new Date();
 let locale = 'en-US';
-let year = date.getFullYear(),
-    month = date.getMonth(),
-    day = date.getDay();
 
 let incs = [10, 30, 60];
-let holidays = [
-    '1/1/2019',
-    '5/27/2019',
-    '7/4/2019',
-    '7/5/2019',
-    '9/2/2019',
-    '11/28/2019',
-    '11/29/2019',
-    '12/25/2019'
-];
+let holidays = {
+    // 1/1   New Year's Day (Tuesday)
+    '1/1/2019' : '1/2/2019',        // Tue -> Wed
+
+    // 5/27  Memorial Day (Monday)
+    '5/26/2019' : '5/28/2019',      // Sun -> Tue
+    '5/27/2019' : '5/28/2019',      // Mon -> Tue
+
+    // 7/4   Independence Day (Thursday)
+    '7/4/2019' : '7/3/2019',        // Thu -> Wed
+
+    // 7/5   Day After Independence Day (Friday)
+    '7/5/2019' : '7/3/2019',        // Fri -> Wed
+    '7/6/2019' : '7/3/2019',        // Sat -> Wed
+
+    // 9/2   Labor Day (Monday)
+    '9/1/2019' : '9/3/2019',        // Sun -> Tue
+    '9/2/2019' : '9/3/2019',        // Mon -> Tue
+
+    // 11/28 Thanksgiving Day (Thursday)
+    '11/28/2019' : '11/27/2019',    // Thu -> Wed
+
+    // 11/29 Day after Thanksgiving Day (Friday)
+    '11/29/2019' : '11/27/2019',    // Fri -> Wed
+    '11/30/2019' : '11/27/2019',    // Sat -> Wed
+
+    // 12/25 Christmas Day (Wednesday)
+    '12/25/2019' : '12/24/2019'     // Wed -> Tue
+};
 
 let weekday = () => date.toLocaleDateString(locale, { weekday: 'long' });
 let dec = () => date.setDate(date.getDate() - 1);
@@ -27,68 +43,33 @@ let incX = x => {
 }
 
 let mooIncX = x => {
-    let newDate = new Date(date), valid = false;
+    let newDate = new Date(date);
+
+    // Step 1: Add the days
     newDate.setDate(newDate.getDate() + x);
-    
-    while (!valid) {
-        valid = true;
 
-        let weekend = newDate.getDay() == 0 || newDate.getDay() == 6;
-        let holiday = holidays.indexOf(newDate.toLocaleDateString(locale)) != -1;
+    // Step 2: If we landed on a date that's in the holiday
+    //         list, just go where it tells us to go.
+    let newDateString = newDate.toLocaleDateString(locale);
+    if (newDateString in holidays) {
+        let replacement = holidays[newDateString];
+        newDate = new Date(Date.parse(replacement));
+        newDateString = newDate.toLocaleDateString(locale);
+    }
 
-        /*
-TODO: Redo this whole thing. I did it wrong.
+    // Step 3: If we didn't land on one of those but landed
+    //         on a weekend, go to the nearest weekday.
+    if (!(newDateString in holidays)) {
+        // Move Sunday to Monday
+        if (newDate.getDay() == 0) {
+            newDate.setDate(newDate.getDate() + 1);
+        }
 
-WEEKENDS
-===============================================
-Fall on Saturday => Fri
-Fall on Sunday => Mon
-Fall on Fri/Sat of Fri-Mon weekend => Thu
-Fall on Sun/Mon of Fri-Mon weekend => Tue
-Fall on Sat/Sun of Sat-Tue weekend => Fri
-Fall on Mon/Tue of Sat-Tue weekend => Wed
-Fall on Fri/Sat of Fri-Sun weekend => Thu
-Fall on Sun of Fri-Sun weekend = Mon
-Fall on Sat of Sat-Mon weekend => Fri
-Fall on Sun/Mon of Sat-Mon weekend => Tue
-
-HOLIDAYS
-===============================================
-Fall on Monday => ?
-Fall on Tuesday => ?
-Fall on Wednesday => ?
-Fall on Thursday => ?
-Fall on Friday => ?
-
-WEEKENDS + HOLIDAYS
-===============================================
-Fall on Saturday with holiday Friday => ?
-Fall on Saturday with holiday Monday => ?
-Fall on Sunday with holiday Friday => ?
-Fall on Sunday with holiday Monday => ?
-Fall on Fri/Sat of Fri-Mon weekend with holiday Friday => ?
-Fall on Fri/Sat of Fri-Mon weekend with holiday Monday => ?
-Fall on Sun/Mon of Fri-Mon weekend with holiday Friday => ?
-Fall on Sun/Mon of Fri-Mon weekend with holiday Monday => ?
-Fall on Sat/Sun of Sat-Tue weekend with holiday Friday => ?
-Fall on Sat/Sun of Sat-Tue weekend with holiday Monday => ?
-Fall on Mon/Tue of Sat-Tue weekend with holiday Friday => ?
-Fall on Mon/Tue of Sat-Tue weekend with holiday Monday  => ?
-Fall on Fri/Sat of Fri-Sun weekend with holiday Friday => ?
-Fall on Fri/Sat of Fri-Sun weekend with holiday Monday => ?
-Fall on Sun of Fri-Sun weekend with holiday Friday = ?
-Fall on Sun of Fri-Sun weekend with holiday Monday = ?
-Fall on Sat of Sat-Mon weekend with holiday Friday => ?
-Fall on Sat of Sat-Mon weekend with holiday Monday => ?
-Fall on Sun/Mon of Sat-Mon weekend with holiday Friday => ?
-Fall on Sun/Mon of Sat-Mon weekend with holiday Monday => ?
-        */
-        
-        if (weekend) valid = false;
-        if (holiday) valid = false;
-
-        if (!valid) newDate.setDate(newDate.getDate() + 1);
-    };
+        // Move Saturday to Friday
+        if (newDate.getDay() == 6) {
+            newDate.setDate(newDate.getDate() - 1);
+        }
+    }
 
     return newDate;
 }
@@ -101,8 +82,8 @@ let getResults = () => {
         let newDate = incX(x);
         daysResults.push(`+${x} days: ${newDate.toLocaleDateString(locale, { weekday: 'long' })}, ${newDate.toLocaleDateString(locale)}<br>`);
         
-        let moowDate = mooIncX(x);
-        mooResults.push(`+${x} days: ${moowDate.toLocaleDateString(locale, { weekday: 'long' })}, ${moowDate.toLocaleDateString(locale)}<br>`);
+        let mooDate = mooIncX(x);
+        mooResults.push(`+${x} days: ${mooDate.toLocaleDateString(locale, { weekday: 'long' })}, ${mooDate.toLocaleDateString(locale)}<br>`);
     });
 
     document.getElementById('daysData').innerHTML = daysResults.join('');
